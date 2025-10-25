@@ -9,10 +9,13 @@ import java.util.Scanner;
  * @author Admin
  */
 public class MainJava {
-
+    static final int MAX_CITIES = 30;
+    static int[][] distance = new int[MAX_CITIES][MAX_CITIES];
+    static java.util.Scanner x = new java.util.Scanner(System.in);
+    
    
     public static void main(String[] args) {
-        Scanner x = new Scanner(System.in);
+        initMatrix();
         boolean exe = true;
 
         while (exe) {
@@ -27,16 +30,16 @@ public class MainJava {
             String choice = x.nextLine().trim();
             switch (choice) {
                 case "1": 
-                    System.out.println("(City menu – develop next)"); 
+                    System.out.println("(City menu)"); 
                 break;
                 case "2": 
-                    System.out.println("(Distance menu – develop next)"); 
+                    System.out.println("(Distance menu)"); 
                 break;
                 case "3": 
-                    System.out.println("(Delivery – develop next)");
+                    System.out.println("(Delivery)");
                 break;
                 case "4": 
-                    System.out.println("(Reports – develop next)"); 
+                    System.out.println("(Reports )"); 
                 break;
                 case "5": 
                     exe = false; 
@@ -44,9 +47,17 @@ public class MainJava {
                 default: 
                     System.out.println("Invalid option.");
             }
+        }   
+    }
+    static void initMatrix() {
+        for (int i = 0; i < MAX_CITIES; i++) {
+            for (int j = 0; j < MAX_CITIES; j++) {
+                distance[i][j] = (i == j) ? 0 : -1;
+            }
         }
-        System.out.println("Bye!");
-        x.close();
     }
     
+    
+    
 }
+
