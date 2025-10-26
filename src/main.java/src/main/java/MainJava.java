@@ -578,6 +578,23 @@ public class MainJava {
             System.out.println("Failed to save deliveries.txt: " + e.getMessage());
         }
     }
+     static void appendDeliveryToFile(Delivery d) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(DELIVERIES_FILE, true))) {
+            pw.printf(Locale.US,
+                "%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%s%n",
+                d.from, d.to, d.weightKg, d.vehType, d.distKm,
+                d.timeHr, d.baseCost, d.fuelUsed, d.fuelCost, d.opCost, d.profit, d.charge,
+                d.path
+            );
+        } catch (Exception e) {
+            System.out.println("Failed to append deliveries.txt: " + e.getMessage());
+        }
+    }
+
+    static void saveAll() {
+        saveRoutes();
+        saveDeliveries();
+    }
     
     
     
