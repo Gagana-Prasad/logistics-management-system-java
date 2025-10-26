@@ -81,6 +81,13 @@ public class MainJava {
                 case 3:
                     vehicleref();
                     break;
+                case 4:
+                    newdelivery();
+                    break;
+                case 5:
+                    showreports();
+                    break;
+                    
                 
                     
 
@@ -358,6 +365,46 @@ public class MainJava {
                 vehiclenames[v],capacity[v], rateperKM[v], averagespeed[v], effKMperl[v]);
         }
     }
+    static void showreports() {
+        if (deliveryCount == 0) { System.out.println("No deliveries yet."); return; }
+
+        int totalDeliveries = deliveryCount;
+        long totDistance = 0;
+        double tottime = 0.0, totalRevenue = 0.0, totalProfit = 0.0;
+
+        int longest = Integer.MIN_VALUE, shortest = Integer.MAX_VALUE;
+        int idxLongest = -1, idxShortest = -1;
+
+        for (int i = 0; i < deliveryCount; i++) {
+            Delivery d = deliveries[i];
+            totDistance += d.distKm;
+            tottime += d.timeHr;
+            totalRevenue += d.charge;
+            totalProfit += d.profit;
+
+            if (d.distKm > longest) { longest = d.distKm; idxLongest = i; }
+            if (d.distKm >= 0 && d.distKm < shortest) { shortest = d.distKm; idxShortest = i; }
+        }
+
+        double avgtime = tottime / totalDeliveries;
+
+        System.out.println("\n--- REPORTS ---");
+        System.out.println("Total Deliveries Completed: " + totalDeliveries);
+        System.out.println("Total Distance Covered: " + totDistance + " km");
+        System.out.printf(Locale.US, "Average Delivery Time: %.2f hours%n", avgtime);
+        System.out.printf(Locale.US, "Total Revenue (charges): %, .2f LKR%n", totalRevenue);
+        System.out.printf(Locale.US, "Total Profit: %, .2f LKR%n", totalProfit);
+
+        if (idxLongest != -1) {
+            Delivery d = deliveries[idxLongest];
+            System.out.println("Longest Route: " + cityNames[d.from] + " -> " + cityNames[d.to] + " (" + d.distKm + " km)");
+        }
+        if (idxShortest != -1) {
+            Delivery d = deliveries[idxShortest];
+            System.out.println("Shortest Route: " + cityNames[d.from] + " -> " + cityNames[d.to] + " (" + d.distKm + " km)");
+        }
+    }
+
     
     
     
