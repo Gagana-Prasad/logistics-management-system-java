@@ -59,6 +59,8 @@ public class MainJava {
 
     public static void main(String[] args) {
         initMatrix();
+        loadRoutesIfExists();
+        loadDeliveriesIfExists();
         
         boolean exe = true;
 
@@ -556,6 +558,7 @@ public class MainJava {
             System.out.println("Failed to load deliveries.txt: " + e.getMessage());
         }
     }
+    
     static int parseIntSafe(String s, int def) {
         try { return Integer.parseInt(s.trim()); } catch (Exception e) { return def; }
     }
@@ -595,6 +598,31 @@ public class MainJava {
         saveRoutes();
         saveDeliveries();
     }
+    static void initmatrix() {
+        for (int i = 0; i < MAX_CITIES; i++)
+            for (int j = 0; j < MAX_CITIES; j++)
+                dist[i][j] = (i == j) ? 0 : -1;
+    }
+
+    static int findcity(String name) {
+        for (int i = 0; i < cityCount; i++)
+            if (cityNames[i].equalsIgnoreCase(name)) return i;
+        return -1;
+    }
+
+    static boolean validcity(int idx) { return idx >= 0 && idx < cityCount; }
+
+    static int safeint() {
+        while (true) {
+            String s = SC.nextLine().trim();
+            try { return Integer.parseInt(s); }
+            catch (Exception e) { System.out.print("Enter integer: "); }
+        }
+    }
+    static String[] splitCsv(String line) {
+        return line.split(",", -1);
+    }
+    
     
     
     
