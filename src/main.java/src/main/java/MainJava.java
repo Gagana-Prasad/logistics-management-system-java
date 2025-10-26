@@ -9,9 +9,15 @@ import java.io.*;
 public class MainJava {
     static final int MAX_CITIES = 30;
     static int cityCount = 0;
+    static double fullprice = 310.0;
     static int[][] distance = new int[MAX_CITIES][MAX_CITIES];
     static java.util.Scanner x = new java.util.Scanner(System.in);
     static String[] cityNames = new String[MAX_CITIES];
+    static final String[] vehiclenames  = {"Van", "Truck", "Lorry"};
+    static final int[]    capacity   = {1000,   5000,    10000};
+    static final int[]    rateperKM = {30,     40,      45};
+    static final int[]    averagespeed  = {60,     50,      40};
+    static final int[]    effKMperl= {12,      6,       4};
     
     static int[][] dist = new int[MAX_CITIES][MAX_CITIES];
     static int safeInt() {
@@ -58,6 +64,14 @@ public class MainJava {
             switch (choice) {
                 case 1 :
                     cityMenu();
+                    break;
+                case 2:
+                    distancemenu();
+                    break;
+                case 3:
+                    vehicleref();
+                    break;
+                    
 
             
             
@@ -151,7 +165,8 @@ public class MainJava {
 
         
         for (int i = idx; i < cityCount - 1; i++)
-            for (int j = 0; j < cityCount; j++) dist[i][j] = dist[i + 1][j];
+            for (int j = 0; j < cityCount; j++) 
+                dist[i][j] = dist[i + 1][j];
         
         for (int j = idx; j < cityCount - 1; j++)
             for (int i = 0; i < cityCount; i++) dist[i][j] = dist[i][j + 1];
@@ -170,6 +185,87 @@ public class MainJava {
         for (int i = 0; i < cityCount; i++) 
             System.out.println("  [" + i + "] " + cityNames[i]);
     }
+    static void distancemenu() {
+        if (cityCount < 2) { System.out.println("Add at least 2 cities first."); return; }
+        while (true) {
+            System.out.println("\t\tDistance Management\t\t");
+            System.out.println("1->Edit distance(i,j)");
+            System.out.println("2->Print distance table");
+            System.out.println("3->Back");
+            System.out.print("Choose: ");
+            int ch = safeInt();
+            switch (ch) {
+                case 1:
+                    setDistance();
+                    break;
+                case 2:
+                    distancetable();
+                    break;
+                case 3:
+                { return; }
+                default:
+                    System.out.println("Invalid.");
+            }
+        }
+    }
+
+    static void setDistance() {
+        listCities();
+        System.out.print("\tfrom index\t: ");
+        int i = safeInt();
+        System.out.print("\tto index\t: ");
+        int j = safeInt();
+        if (!validCity(i) || !validCity(j)) 
+        { System.out.println("Bad index."); return; }
+        if (i == j) 
+        { System.out.println("Distance to self is 0."); return; }
+
+        System.out.print("Enter distance km (>=0, or -1 to clear route): ");
+        int d = safeInt();
+        if (d < -1) { System.out.println("Invalid."); return; }
+        if (d == 0) { System.out.println("0 only valid on diagonal."); return; }
+
+        dist[i][j] = d;
+        dist[j][i] = d;
+        System.out.println("Updated " + cityNames[i] + "" + cityNames[j] + " = " + d);
+    }
+
+    static void distancetable() {
+        System.out.print("       ");
+        for (int j = 0; j < cityCount; j++) System.out.printf("%12s", "[" + j + "]");
+        System.out.println();
+        for (int i = 0; i < cityCount; i++) {
+            System.out.printf("%-6s", "[" + i + "]");
+            for (int j = 0; j < cityCount; j++) System.out.printf("%12s", dist[i][j]);
+            System.out.println("   " + cityNames[i]);
+        }
+    }
+    static void vehicleref() {
+        System.out.println("\tType   Cap(kg)  Rate/km  AvgSpeed  Km/L\t");
+        for (int g = 0; g < 3; g++) {
+            System.out.printf("%-6s %7d %8d %9d %6d%n",
+                vehiclenames[g], capacity[g], rateperKM[g], averagespeed[g], effKMperl[g]);
+        }
+        System.out.printf(Locale.US, "Fuel Price: %, .2f LKR/L%n", fullprice);
+
+        System.out.print("do change fuel price? (y/n): ");
+        String ans = SC.nextLine().trim().toLowerCase(Locale.ROOT);
+        if (ans.equals("y") || ans.equals("yes")) {
+            System.out.print("New fuel price (LKR/L): ");
+            try {
+                double fp = Double.parseDouble(SC.nextLine().trim());
+                if (fp > 0) {
+                    fullprice = fp;
+                    System.out.println("price updated.");
+                } else {
+                    System.out.println("Invalid price.");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid number.");
+            }
+        }
+    }
+
     
     
     
