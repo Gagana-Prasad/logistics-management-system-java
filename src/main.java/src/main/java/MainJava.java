@@ -103,17 +103,19 @@ public class MainJava {
         }
     }
     static void addCity() {
-        if (cityCount >= MAX_CITIES) { System.out.println("Max cities reached."); return; }
+        if (cityCount >= MAX_CITIES) 
+        { System.out.println("Max cities reached."); return; }
         System.out.print("Enter city name: ");
         String name = SC.nextLine().trim();
         if (name.isEmpty()) { System.out.println("Empty name."); return; }
-        if (findCity(name) != -1) { System.out.println("City already exists."); return; }
+        if (findCity(name) != -1) 
+        { System.out.println("City already exists."); return; }
 
         cityNames[cityCount] = name;
-        // init row/col
+        
         for (int i = 0; i <= cityCount; i++) {
-            dist[cityCount][i] = (cityCount == i) ? 0 : -1;
-            dist[i][cityCount] = (cityCount == i) ? 0 : -1;
+            distance[cityCount][i] = (cityCount == i) ? 0 : -1;
+            distance[i][cityCount] = (cityCount == i) ? 0 : -1;
         }
         cityCount++;
         System.out.println("Added.");
@@ -142,20 +144,22 @@ public class MainJava {
         int idx = safeInt();
         if (!validCity(idx)) { System.out.println("Bad index."); return; }
 
-        // shift names
-        for (int i = idx; i < cityCount - 1; i++) cityNames[i] = cityNames[i + 1];
+        
+        for (int i = idx; i < cityCount - 1; i++) 
+            cityNames[i] = cityNames[i + 1];
         cityNames[cityCount - 1] = null;
 
-        // shift matrix rows
+        
         for (int i = idx; i < cityCount - 1; i++)
             for (int j = 0; j < cityCount; j++) dist[i][j] = dist[i + 1][j];
-        // shift matrix cols
+        
         for (int j = idx; j < cityCount - 1; j++)
             for (int i = 0; i < cityCount; i++) dist[i][j] = dist[i][j + 1];
 
-        // clean tail
-        for (int i = 0; i < cityCount; i++) { dist[cityCount - 1][i] = -1; dist[i][cityCount - 1] = -1; }
-        dist[cityCount - 1][cityCount - 1] = 0;
+        
+        for (int i = 0; i < cityCount; i++) 
+        { distance[cityCount - 1][i] = -1; distance[i][cityCount - 1] = -1; }
+        distance[cityCount - 1][cityCount - 1] = 0;
 
         cityCount--;
         System.out.println("Removed.");
@@ -163,7 +167,8 @@ public class MainJava {
 
     static void listCities() {
         System.out.println("Cities (" + cityCount + "):");
-        for (int i = 0; i < cityCount; i++) System.out.println("  [" + i + "] " + cityNames[i]);
+        for (int i = 0; i < cityCount; i++) 
+            System.out.println("  [" + i + "] " + cityNames[i]);
     }
     
     
