@@ -8,6 +8,7 @@ import java.io.*;
 
 public class MainJava {
     static final int MAX_CITIES = 30;
+    static final int MAX_DELIVERIES = 50;
     static int cityCount = 0;
     static double fullprice = 310.0;
     static int[][] distance = new int[MAX_CITIES][MAX_CITIES];
@@ -18,6 +19,9 @@ public class MainJava {
     static final int[]    rateperKM = {30,     40,      45};
     static final int[]    averagespeed  = {60,     50,      40};
     static final int[]    effKMperl= {12,      6,       4};
+    
+    
+
     
     static int[][] dist = new int[MAX_CITIES][MAX_CITIES];
     static int safeInt() {
@@ -71,6 +75,7 @@ public class MainJava {
                 case 3:
                     vehicleref();
                     break;
+                
                     
 
             
@@ -265,7 +270,58 @@ public class MainJava {
             }
         }
     }
+     static class DijkstraResult {
+        boolean reachable;
+        int distance;
+        String pathString;
+    }
 
+    static DijkstraResult dijkstra(int src, int dst) {
+        int n = cityCount;
+        int[] dmin = new int[n];
+        boolean[] vis = new boolean[n];
+        int[] prev = new int[n];
+        Arrays.fill(dmin, Integer.MAX_VALUE / 4);
+        Arrays.fill(prev, -1);
+        dmin[src] = 0;
+
+        for (int k = 0; k < n; k++) {
+            int u = -1, best = Integer.MAX_VALUE / 4;
+            for (int i = 0; i < n; i++)
+                if (!vis[i] && dmin[i] < best) { best = dmin[i]; u = i; }
+            if (u == -1) break;
+            vis[u] = true;
+            if (u == dst) break;
+
+            for (int v = 0; v < n; v++) {
+                int w = dist[u][v];
+                if (w >= 0 && !vis[v]) {
+                    if (dmin[u] + w < dmin[v]) {
+                        dmin[v] = dmin[u] + w;
+                        prev[v] = u;
+                    }
+                }
+            }
+        }
+
+        DijkstraResult res = new DijkstraResult();
+        if (dmin[dst] >= Integer.MAX_VALUE / 8) { res.reachable = false; return res; }
+        res.reachable = true;
+        res.distance = dmin[dst];
+
+        
+        List<Integer> path = new ArrayList<>();
+        for (int cur = dst; cur != -1; cur = prev[cur]) path.add(cur);
+        Collections.reverse(path);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < path.size(); i++) {
+            sb.append(cityNames[path.get(i)]);
+            if (i < path.size() - 1) sb.append(" -> ");
+        }
+        res.pathString = sb.toString();
+        return res;
+    }
+    
     
     
     
