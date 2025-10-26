@@ -562,6 +562,22 @@ public class MainJava {
     static double parseDoubleSafe(String s, double def) {
         try { return Double.parseDouble(s.trim()); } catch (Exception e) { return def; }
     }
+     static void saveDeliveries() {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(DELIVERIES_FILE))) {
+            for (int k = 0; k < deliveryCount; k++) {
+                Delivery d = deliveries[k];
+                // CSV safe for path (no commas in path " -> ")
+                pw.printf(Locale.US,
+                    "%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%s%n",
+                    d.from, d.to, d.weightKg, d.vehType, d.distKm,
+                    d.timeHr, d.baseCost, d.fuelUsed, d.fuelCost, d.opCost, d.profit, d.charge,
+                    d.path
+                );
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to save deliveries.txt: " + e.getMessage());
+        }
+    }
     
     
     
