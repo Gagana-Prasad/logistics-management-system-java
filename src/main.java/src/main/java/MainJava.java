@@ -508,6 +508,60 @@ public class MainJava {
             System.out.println("Failed to load routes.txt: " + e.getMessage());
         }
     }
+    static void saveRoutes() {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(ROUTES_FILE))) {
+            pw.println(cityCount);
+            for (int i = 0; i < cityCount; i++) pw.println(cityNames[i]);
+            pw.println("MATRIX");
+            for (int i = 0; i < cityCount; i++) {
+                for (int j = 0; j < cityCount; j++) {
+                    pw.print(dist[i][j]);
+                    if (j < cityCount - 1) pw.print(" ");
+                }
+                pw.println();
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to save routes.txt: " + e.getMessage());
+        }
+    }
+
+    static void loadDeliveriesIfExists() {
+        File f = new File(DELIVERIES_FILE);
+        if (!f.exists()) return;
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+            String line;
+            while ((line = br.readLine()) != null && deliveryCount < MAX_DELIVERIES) {
+                
+                String[] p = splitCsv(line);
+                if (p.length < 13) continue;
+
+                Delivery d = new Delivery();
+                d.from = parseIntSafe(p[0], -1);
+                d.to = parseIntSafe(p[1], -1);
+                d.weightKg = parseIntSafe(p[2], 0);
+                d.vehType = parseIntSafe(p[3], 0);
+                d.distKm = parseIntSafe(p[4], 0);
+                d.timeHr = parseDoubleSafe(p[5], 0);
+                d.baseCost = parseDoubleSafe(p[6], 0);
+                d.fuelUsed = parseDoubleSafe(p[7], 0);
+                d.fuelCost = parseDoubleSafe(p[8], 0);
+                d.opCost = parseDoubleSafe(p[9], 0);
+                d.profit = parseDoubleSafe(p[10], 0);
+                d.charge = parseDoubleSafe(p[11], 0);
+                d.path = p[12];
+                deliveries[deliveryCount++] = d;
+            }
+            System.out.println("[Loaded deliveries.txt]");
+        } catch (Exception e) {
+            System.out.println("Failed to load deliveries.txt: " + e.getMessage());
+        }
+    }
+    static int parseIntSafe(String s, int def) {
+        try { return Integer.parseInt(s.trim()); } catch (Exception e) { return def; }
+    }
+    static double parseDoubleSafe(String s, double def) {
+        try { return Double.parseDouble(s.trim()); } catch (Exception e) { return def; }
+    }
     
     
     
