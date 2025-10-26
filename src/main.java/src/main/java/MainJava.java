@@ -26,6 +26,8 @@ public class MainJava {
     }
     static Delivery[] deliveries = new Delivery[MAX_DELIVERIES];
     static int deliveryCount = 0;
+    static final String ROUTES_FILE = "routes.txt";
+    static final String DELIVERIES_FILE = "deliveries.txt";
 
 
     
@@ -485,7 +487,27 @@ public class MainJava {
                 vehiclenames[v], D, timeHr, charge, fuelCost, opCost);
         }
     }
-    
+    static void loadRoutesIfExists() {
+        File f = new File(ROUTES_FILE);
+        if (!f.exists()) return;
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+            String line = br.readLine();
+            if (line == null) return;
+            cityCount = Integer.parseInt(line.trim());
+            for (int i = 0; i < cityCount; i++) cityNames[i] = br.readLine();
+
+            String marker = br.readLine();
+            if (marker == null || !marker.trim().equals("MATRIX")) return;
+
+            for (int i = 0; i < cityCount; i++) {
+                String[] parts = br.readLine().trim().split("\\s+");
+                for (int j = 0; j < cityCount; j++) dist[i][j] = Integer.parseInt(parts[j]);
+            }
+            System.out.println("[Loaded routes.txt]");
+        } catch (Exception e) {
+            System.out.println("Failed to load routes.txt: " + e.getMessage());
+        }
+    }
     
     
     
