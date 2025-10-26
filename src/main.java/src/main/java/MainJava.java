@@ -19,7 +19,14 @@ public class MainJava {
     static final int[]    rateperKM = {30,     40,      45};
     static final int[]    averagespeed  = {60,     50,      40};
     static final int[]    effKMperl= {12,      6,       4};
-    
+    static class Delivery {
+        int from, to, vehType, distKm, weightKg;
+        double timeHr, baseCost, fuelUsed, fuelCost, opCost, profit, charge;
+        String path;
+    }
+    static Delivery[] deliveries = new Delivery[MAX_DELIVERIES];
+    static int deliveryCount = 0;
+
 
     
     static int[][] dist = new int[MAX_CITIES][MAX_CITIES];
@@ -269,6 +276,88 @@ public class MainJava {
             }
         }
     }
+     static void newdelivery() {
+        if (cityCount < 2) { System.out.println("Add cities first."); return; }
+
+        listCities();
+        System.out.print("From index: ");
+        int s = safeInt();
+        System.out.print("To index: ");
+        int t = safeInt();
+        if (!validCity(s) || !validCity(t) || s == t) { System.out.println("Invalid source/destination."); return; }
+
+        System.out.print("Weight (kg): ");
+        int w = safeInt();
+        if (w <= 0) { System.out.println("Invalid weight."); return; }
+
+        showVehicleTable();
+        System.out.print("Vehicle (0=Van,1=Truck,2=Lorry): ");
+        int v = safeInt();
+        if (v < 0 || v > 2) { System.out.println("Invalid vehicle."); return; }
+        if (w > capacity[v]) { System.out.println("Weight exceeds vehicle capacity."); return; }
+
+        DijkstraResult res = dijkstra(s, t);
+        if (!res.reachable) { System.out.println("No route found."); return; }
+
+        int D = res.distance;
+        int R = rateperKM[v], S = averagespeed[v], E = effKMperl[v];
+
+        double deliveryCost = D * R * (1.0 + (w / 10000.0));
+        double timeHr = (double) D / S;
+        double fuelUsed = (double) D / E;
+        double fuelCost = fuelUsed * fullprice;
+        double opCost = deliveryCost + fuelCost;
+       
+        double profit = opCost * 0.25;
+        double charge = opCost + profit;
+
+        System.out.println("\n======================================================");
+        System.out.println("DELIVERY COST ESTIMATION");
+        System.out.println("------------------------------------------------------");
+        System.out.println("From: " + cityNames[s]);
+        System.out.println("To: " + cityNames[t]);
+        System.out.println("Path: " + res.pathString);
+        System.out.println("Minimum Distance: " + D + " km");
+        System.out.println("Vehicle: " + vehiclenames[v]);
+        System.out.println("Weight: " + w + " kg");
+        System.out.println("------------------------------------------------------");
+        System.out.printf(Locale.US, "Base Cost: %d × %d × (1 + %d/10000) = %, .2f LKR%n", D, R, w, deliveryCost);
+        System.out.printf(Locale.US, "Fuel Used: %.2f L%n", fuelUsed);
+        System.out.printf(Locale.US, "Fuel Cost: %, .2f LKR%n", fuelCost);
+        System.out.printf(Locale.US, "Operational Cost: %, .2f LKR%n", opCost);
+        System.out.printf(Locale.US, "Profit: %, .2f LKR%n", profit);
+        System.out.printf(Locale.US, "Customer Charge: %, .2f LKR%n", charge);
+        System.out.printf(Locale.US, "Estimated Time: %.2f hours%n", timeHr);
+        System.out.println("======================================================");
+
+       
+        if (deliveryCount < MAX_DELIVERIES) {
+            Delivery d = new Delivery();
+            d.from = s; d.to = t; d.vehType = v; d.weightKg = w; d.distKm = D;
+            d.timeHr = timeHr; d.baseCost = deliveryCost; d.fuelUsed = fuelUsed;
+            d.fuelCost = fuelCost; d.opCost = opCost; d.profit = profit; d.charge = charge;
+            d.path = res.pathString;
+            deliveries[deliveryCount++] = d;
+            
+        } else {
+            System.out.println("WARNING: Delivery store full; not saved in memory.");
+        }
+
+        
+        System.out.print("Compare the speed of all 3 cars? (y/n): ");
+        String ans = SC.nextLine().trim().toLowerCase(Locale.ROOT);
+        if (ans.equals("y") || ans.equals("yes")) {
+            compareVehiclesFor(s, t, w);
+        }
+    }
+
+    static void showVehicleTable() {
+        System.out.println("\nType   Cap(kg)  Rate/km  AvgSpeed  Km/L");
+        for (int v = 0; v < 3; v++) {
+            System.out.printf("%-6s %7d %8d %9d %6d%n",
+                vehiclenames[v],capacity[v], rateperKM[v], averagespeed[v], effKMperl[v]);
+        }
+    }
     
     
     
@@ -349,6 +438,7 @@ public class MainJava {
                 vehiclenames[v], D, timeHr, charge, fuelCost, opCost);
         }
     }
+    
     
     
     
