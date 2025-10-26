@@ -20,7 +20,6 @@ public class MainJava {
     static final int[]    averagespeed  = {60,     50,      40};
     static final int[]    effKMperl= {12,      6,       4};
     
-    
 
     
     static int[][] dist = new int[MAX_CITIES][MAX_CITIES];
@@ -270,6 +269,9 @@ public class MainJava {
             }
         }
     }
+    
+    
+    
      static class DijkstraResult {
         boolean reachable;
         int distance;
@@ -303,6 +305,7 @@ public class MainJava {
                 }
             }
         }
+        
 
         DijkstraResult res = new DijkstraResult();
         if (dmin[dst] >= Integer.MAX_VALUE / 8) { res.reachable = false; return res; }
@@ -320,6 +323,31 @@ public class MainJava {
         }
         res.pathString = sb.toString();
         return res;
+    }
+    static void compareVehiclesFor(int s, int t, int w) {
+        DijkstraResult res = dijkstra(s, t);
+        if (!res.reachable) { System.out.println("No route."); return; }
+        int D = res.distance;
+
+        System.out.println("\n--- VEHICLE COMPARISON (" + cityNames[s] + " → " + cityNames[t] + ", " + w + " kg) ---");
+        for (int v = 0; v < 3; v++) {
+            if (w > capacity[v]) {
+                System.out.printf("%-6s : capacity exceeded (>%d kg)%n", vehiclenames[v], capacity[v]);
+                continue;
+            }
+            int R = rateperKM[v], S = averagespeed[v], E = effKMperl[v];
+            double deliveryCost = D * R * (1.0 + (w / 10000.0));
+            double timeHr = (double) D / S;
+            double fuelUsed = (double) D / E;
+            double fuelCost = fuelUsed * fullprice;
+            double opCost = deliveryCost + fuelCost;
+            double profit = opCost * 0.25;
+            double charge = opCost + profit;
+
+            System.out.printf(Locale.US,
+                "%-6s : Distance=%dkm | Time=%.2fh | Charge=%, .2f LKR (Fuel=%, .2f | Op=%, .2f)%n",
+                vehiclenames[v], D, timeHr, charge, fuelCost, opCost);
+        }
     }
     
     
